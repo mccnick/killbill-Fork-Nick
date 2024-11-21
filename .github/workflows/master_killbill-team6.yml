@@ -2,6 +2,7 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
 name: Build and deploy JAR app to Azure Web App - killbill-team6
+name: Codacy Analysis CLI
 
 on:
   push:
@@ -22,6 +23,9 @@ jobs:
           java-version: '17'
           distribution: 'microsoft'
 
+      - name: Run the Ant jar target
+        run: ant -noinput -buildfile build-ci.xml jar
+
       - name: Build with Maven
         run: mvn clean install
 
@@ -30,6 +34,16 @@ jobs:
         with:
           name: java-app
           path: '${{ github.workspace }}/target/*.jar'
+
+  codacy-analysis-cli:
+    name: Codacy Analysis CLI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@main
+
+      - name: Run Codacy Analysis CLI
+        uses: codacy/codacy-analysis-cli-action@master
 
   deploy:
     runs-on: ubuntu-latest
